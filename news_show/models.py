@@ -48,6 +48,7 @@ class NewsArticle(models.Model):
     category = models.CharField(max_length=255, verbose_name='Тема')
     news_link = models.CharField(max_length=255, verbose_name='Ссылка на статью')
     post_time = models.CharField(max_length=255, verbose_name='Время выкладывания')
+    source = models.CharField(max_length=255, verbose_name='Источник')
 
 
 class Reader(models.Model):
