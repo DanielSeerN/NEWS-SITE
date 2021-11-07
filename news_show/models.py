@@ -19,7 +19,9 @@ class NewsArticle(models.Model):
     category = models.CharField(max_length=255, verbose_name='Тема')
     news_link = models.CharField(max_length=255, verbose_name='Ссылка на статью')
     post_time = models.CharField(max_length=255, verbose_name='Время выкладывания')
-    slug = models.SlugField(unique=False)
+    slug = models.SlugField(unique=True)
+    source = models.CharField(max_length=255, verbose_name='Источник')
+
 
     def __str__(self):
         return self.title

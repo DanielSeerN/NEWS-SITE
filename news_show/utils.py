@@ -12,7 +12,8 @@ def create_news_articles(path):
             news_object.category = news_article['article_category']
             news_object.news_link = news_article['article_url']
             news_object.post_time = news_article['article_post_time']
-            news_object.slug = news_article['article_source']
+            news_object.slug = news_article['article_mark']
+            news_object.source = news_article['article_source']
             all_articles.append(news_object)
             news_object.save()
     return all_articles

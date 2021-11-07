@@ -31,7 +31,8 @@ def get_news(html):
             'article_url': article_url,
             'article_post_time': article_post_time,
             'article_category': article_category,
-            'article_source': 'cybersport-ru'
+            'article_source': 'cybersport-ru',
+            'article_mark': article_url.split('/')[-1]
         }
         data_dict.append(hot_news)
     write_json(data_dict)
