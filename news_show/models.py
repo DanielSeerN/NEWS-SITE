@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 
-USER = get_user_model()
+User = get_user_model()
 
 
 
@@ -28,9 +28,9 @@ class NewsArticle(models.Model):
 
 
 class Reader(models.Model):
-    name = models.ForeignKey(USER, verbose_name='Имя пользователя', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Имя пользователя', on_delete=models.CASCADE)
     mail_box = models.CharField(max_length=255, verbose_name='Почта пользователя', null=True)
     favourite_articles = models.ManyToManyField(FavouriteArticle, blank=True, related_name='favourite_articles')
 
     def __str__(self):
-        return f'Читатель {self.name.first_name}'
+        return f'Читатель {self.user.username}'
