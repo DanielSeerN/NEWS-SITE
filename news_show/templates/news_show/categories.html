@@ -41,41 +41,18 @@
                 </div>
             </div>
         </nav>
-        <!-- Page Header-->
-        <header class="masthead" style="background-image: url('assets/img/home-bg.jpg')">
-            <div class="container position-relative px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-                        <div class="site-heading">
-                            <h1>Ваши любимые новости, {{request.user.username}}.</h1>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
         <!-- Main Content-->
         {%block content%}
-        <div class="container px-4 px-lg-5">
-            <div class="row gx-4 gx-lg-5 justify-content-center">
-                <div class="col-md-10 col-lg-8 col-xl-7">
-                    <!-- Post preview-->
-                    {%for article in favourites%}
-                    <div class="post-preview">
-                        <a href="{%url 'articles' slug=article.slug%}">
-                            <h2 class="post-title">{{article.title}}</h2>
-                        </a>
-                        <h3 class="post-subtitle">{{article.category}}</h3>
-                        <p class="post-meta">
-                            <a href="{%url 'add_to_favourites' slug=article.slug%}">Добавить в избранное</a>
-                            <a href="{%url 'category' slug=article.source.slug%}"> <img src="{{article.source.icon.url}}"></a> {{article.post_time}}
-                        </p>
+        <div class="container">
+            <div class="row row-cols-3">
+                {%for category in categories%}
+                <div class="col-lg-4 col-md-6 mb-6">
+                    <div class="h-100">
+                        <a href="{%url 'category' slug=category.slug%}">{{category.title}}</a>
                     </div>
-                    {%endfor%}
-                    <!-- Divider-->
-                    <hr class="my-4" />
-                    <!-- Pager-->
                 </div>
+                {%endfor%}
             </div>
         </div>
         {%endblock content%}

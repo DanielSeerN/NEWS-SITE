@@ -3,13 +3,16 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views import View
 
-from .models import NewsArticle, FavouriteArticle, Reader
-from .create_news import make_news
+from .models import NewsArticle, FavouriteArticle, Reader, SourceCategory
 from .forms import LoginForm, RegistrationForm
+from .news_refresher import refresh
 
 
 def do_main_news(request):
-    make_news()
+    """
+    Главная страница агрегатора.
+    """
+    refresh()
     all_news = NewsArticle.objects.order_by('post_time')
     context = {
         'all_news': all_news
@@ -17,37 +20,79 @@ def do_main_news(request):
     return render(request, 'news_show/index.html', context)
 
 
-def get_cybersport_ru_news(request):
-    news = NewsArticle.objects.filter(source='cybersport-ru')
+def get_categories(request):
+    """
+    Представление для категорий новостей.
+    """
+    categories = SourceCategory.objects.all()
     context = {
-        'cybersport_ru_news': news
+        'categories': categories
     }
-    return render(request, 'news_show/cybersport_ru.html', context)
+    return render(request, 'news_show/categories.html', context)
 
 
-def get_cyber_sport_ru_news(request):
-    news = NewsArticle.objects.filter(source='cyber-sport-ru')
+def get_category_news(request, **kwargs):
+    """
+    Представление для новостей категории.
+    """
+    category = SourceCategory.objects.get(slug=kwargs.get('slug'))
+    news = NewsArticle.objects.filter(source=category)
     context = {
-        'cyber_sport_ru_news': news
+        'news': news,
+        'category': category
     }
-    return render(request, 'news_show/cyber_sport_ru.html', context)
+    return render(request, 'news_show/category_news.html', context)
 
 
 def add_favourite_article(request, **kwargs):
+    """
+    Представление для добавления новости в избранное
+    """
     article_slug = kwargs.get('slug')
     user = request.user
     reader = Reader.objects.get(user=user)
     article = NewsArticle.objects.get(slug=article_slug)
-    favourite_article = FavouriteArticle.objects.create(article=article, reader=reader)
-    reader.favourite_articles.add(favourite_article)
-    favourite_article.save()
-    print(user)
-    print(reader)
-    print(favourite_article)
+    favourite_article, created = FavouriteArticle.objects.get_or_create(article=article, reader=reader)
+    if created:
+        pass
+    else:
+        reader.favourite_articles.add(favourite_article)
+        favourite_article.save()
     return HttpResponseRedirect('/')
 
 
+def get_favourite_articles(request):
+    """
+    Представление для отображения избранных новостей пользователя.
+    """
+    user = request.user
+    reader = Reader.objects.get(user=user)
+    reader_favourites = FavouriteArticle.objects.filter(reader=reader)
+    context = {
+        'favourites': reader_favourites
+    }
+    return render(request, 'news_show/reader_fav_articles.html', context)
+
+
+def show_article(request, **kwargs):
+    """
+    Представление для отображения статьи.
+    """
+    article_slug = kwargs.get('slug')
+    article = NewsArticle.objects.get(slug=article_slug)
+    article_text = article.text.split('*')
+    context = {
+        'article': article,
+        'article_text': article_text
+    }
+    return render(request, 'news_show/article.html', context)
+
+
 class LoginView(View):
+    """
+    Представление для входа в учётную запись.
+    """
+
     def get(self, request, *args, **kwargs):
         form = LoginForm(request.POST or None)
 
@@ -74,6 +119,10 @@ class LoginView(View):
 
 
 class RegistrationView(View):
+    """
+    Представление для регистрации учётной записи.
+    """
+
     def get(self, request, *args, **kwargs):
         form = RegistrationForm(request.POST or None)
         context = {
@@ -97,5 +146,3 @@ class RegistrationView(View):
         }
 
         return render(request, 'news_show/registration.html', context)
-
-# Create your views here.

@@ -20,17 +20,23 @@ def get_news(html):
     for article in news:
         article_title = article.find('a', class_='h2').text
         article_url = article.find('a',
-                                   class_='material-list__item-img-link material-list__item-img-link_float_right').get(
+                                   class_='material-list__item-news_show-link material-list__item-news_show-link_float_right').get(
             'href')
         article_post_time = article.find(class_='time-block time-block_top').text
         article_paragraph = article.find('p').text
+        request_for_article = requests.get(article_url).text
+        article_soup = BeautifulSoup(request_for_article, 'lxml')
+        article_text = article_soup.find_all('p', class_='is-regular')
+
+
         article_dict = {
             'article_title': article_title,
             'article_url': article_url,
             'article_post_time': article_post_time,
             'article_source': 'cyber-sports-ru',
             'article_category': article_paragraph[:-5],
-            'article_mark': article_url.split('/')[-1]
+            'article_mark': article_url.split('/')[-1],
+            'article_text': ' '.join(article_text)
         }
         data_dict.append(article_dict)
     write_json(data_dict)
