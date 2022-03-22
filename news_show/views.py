@@ -5,14 +5,12 @@ from django.views import View
 
 from .models import NewsArticle, FavouriteArticle, Reader, SourceCategory
 from .forms import LoginForm, RegistrationForm
-from .news_refresher import refresh
 
 
 def do_main_news(request):
     """
     Главная страница агрегатора.
     """
-    refresh()
     all_news = NewsArticle.objects.order_by('post_time')
     context = {
         'all_news': all_news
