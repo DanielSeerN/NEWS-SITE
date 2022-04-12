@@ -3,15 +3,17 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views import View
 
-from .models import NewsArticle, FavouriteArticle, Reader, SourceCategory
-from .forms import LoginForm, RegistrationForm
+from .models import FavouriteArticle, Reader, Comment
+from .forms import LoginForm, RegistrationForm, CommentForm
+from .services import get_reader, get_article_by_slug, get_category, get_articles_by_category, get_all_categories, \
+    get_all_news
 
 
 def do_main_news(request):
     """
     Главная страница агрегатора.
     """
-    all_news = NewsArticle.objects.order_by('post_time')
+    all_news = get_all_news()
     context = {
         'all_news': all_news
     }
@@ -22,7 +24,7 @@ def get_categories(request):
     """
     Представление для категорий новостей.
     """
-    categories = SourceCategory.objects.all()
+    categories = get_all_categories()
     context = {
         'categories': categories
     }
@@ -33,8 +35,8 @@ def get_category_news(request, **kwargs):
     """
     Представление для новостей категории.
     """
-    category = SourceCategory.objects.get(slug=kwargs.get('slug'))
-    news = NewsArticle.objects.filter(source=category)
+    category = get_category(kwargs)
+    news = get_articles_by_category(category)
     context = {
         'news': news,
         'category': category
@@ -46,10 +48,8 @@ def add_favourite_article(request, **kwargs):
     """
     Представление для добавления новости в избранное
     """
-    article_slug = kwargs.get('slug')
-    user = request.user
-    reader = Reader.objects.get(user=user)
-    article = NewsArticle.objects.get(slug=article_slug)
+    article = get_article_by_slug(kwargs)
+    reader = get_reader(request)
     favourite_article, created = FavouriteArticle.objects.get_or_create(article=article, reader=reader)
     if created:
         pass
@@ -63,8 +63,7 @@ def get_favourite_articles(request):
     """
     Представление для отображения избранных новостей пользователя.
     """
-    user = request.user
-    reader = Reader.objects.get(user=user)
+    reader = get_reader(request)
     reader_favourites = FavouriteArticle.objects.filter(reader=reader)
     context = {
         'favourites': reader_favourites
@@ -76,14 +75,30 @@ def show_article(request, **kwargs):
     """
     Представление для отображения статьи.
     """
-    article_slug = kwargs.get('slug')
-    article = NewsArticle.objects.get(slug=article_slug)
+    article = get_article_by_slug(kwargs)
     article_text = article.text.split('*')
+    form = CommentForm(request.POST or None)
+    comments = Comment.objects.filter(article=article)
     context = {
         'article': article,
-        'article_text': article_text
+        'article_text': article_text,
+        'form': form,
+        'comments': comments
     }
     return render(request, 'news_show/article.html', context)
+
+
+def leave_a_comment(request, **kwargs):
+    """
+    Представление для создания комментария
+    """
+    article = get_article_by_slug(kwargs)
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment_text = form.cleaned_data['text']
+        reader = get_reader(request)
+        Comment.objects.create(text=comment_text, reader=reader, article=article)
+    return HttpResponseRedirect(f'/articles/{article.slug}')
 
 
 class LoginView(View):

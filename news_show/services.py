@@ -1,7 +1,37 @@
 from news_show.parsers.cybersports_ru_parser import parse_cybersport_ru_news
-from .models import NewsArticle, SourceCategory
+from .models import NewsArticle, SourceCategory, Reader
 
 import json
+
+
+def get_article_by_slug(kwargs):
+    article = NewsArticle.objects.get(slug=kwargs.get('slug'))
+    return article
+
+
+def get_reader(request):
+    reader = Reader.objects.get(user=request.user)
+    return reader
+
+
+def get_all_news():
+    all_news = NewsArticle.objects.all().order_by('post_time')
+    return all_news
+
+
+def get_all_categories():
+    all_categories = SourceCategory.objects.all()
+    return all_categories
+
+
+def get_category(kwargs):
+    category = SourceCategory.objects.get(slug=kwargs.get('slug'))
+    return category
+
+
+def get_articles_by_category(category):
+    articles = NewsArticle.objects.filter(source=category)
+    return articles
 
 
 def create_news_articles(path):

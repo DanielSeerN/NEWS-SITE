@@ -60,15 +60,14 @@
             <div class="row gx-4 gx-lg-5 justify-content-center">
                 <div class="col-md-10 col-lg-8 col-xl-7">
                     <!-- Post preview-->
-                    {%for article in favourites%}
+                    {%for favourite_article in favourites%}
                     <div class="post-preview">
-                        <a href="{%url 'articles' slug=article.slug%}">
-                            <h2 class="post-title">{{article.title}}</h2>
+                        <a href="/articles/{{article.slug}}">
+                            <h2 class="post-title">{{favourite_article.article.title}}</h2>
                         </a>
-                        <h3 class="post-subtitle">{{article.category}}</h3>
+                        <h3 class="post-subtitle">{{favourite_article.article.category}}</h3>
                         <p class="post-meta">
-                            <a href="{%url 'add_to_favourites' slug=article.slug%}">Добавить в избранное</a>
-                            <a href="{%url 'category' slug=article.source.slug%}"> <img src="{{article.source.icon.url}}"></a> {{article.post_time}}
+                            <a href="{%url 'category' slug=favourite_article.article.source.slug%}"> {{favourite_article.article.source.title}}</a> {{favourite_article.article.post_time}}
                         </p>
                     </div>
                     {%endfor%}

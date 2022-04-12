@@ -54,3 +54,13 @@ class Reader(models.Model):
 
     def __str__(self):
         return f'Читатель {self.user.username}'
+
+
+class Comment(models.Model):
+    """
+    Модель для комментария статьи
+    """
+    text = models.TextField(default='text', verbose_name='Текст комментария')
+    reader = models.ForeignKey(Reader, verbose_name='Читатель', on_delete=models.CASCADE)
+    article = models.ForeignKey(NewsArticle, verbose_name='Статья', on_delete=models.CASCADE)
+
