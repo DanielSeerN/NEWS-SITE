@@ -70,27 +70,46 @@
 
 
                     </article>
-                    {%if request.user.is_authenticated%}
-                        <form action="/comment/{{article.slug}}" method="post">
-                            {%csrf_token%}
-                            <div class="col-md-7 mx-auto">{{form|crispy}}</div>
-                            <input type="submit" class="btn btn-outline-dark" values="Оставить комментарий">
-                        </form>
-                    {%else%}
-                    <p><a href="/login">Войдите, чтобы оставлять комментарии</a></p>
-                    {%endif%}
-                    {%for comment in comments%}
-                    <div class="deck-wrap">
-                        <div class="deck">
-                            <div class="card">
-                                <div class="cardHeader">{{request.user.username}}</div>
-                                <div class="cardBody">
-                                    <p>{{comment.text}}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {%endfor%}
+<!--                    {%if request.user.is_authenticated%}-->
+<!--                        <form action="/comment/{{article.slug}}" method="post">-->
+<!--                            {%csrf_token%}-->
+<!--                            <div class="col-md-7 mx-auto">{{form|crispy}}</div>-->
+<!--                            <input type="submit" class="btn btn-outline-dark" values="Оставить комментарий">-->
+<!--                        </form>-->
+<!--                    {%else%}-->
+<!--                    <p><a href="/login">Войдите, чтобы оставлять комментарии</a></p>-->
+<!--                    {%endif%}-->
+<!--                    {%for comment in comments%}-->
+<!--                    <div class="deck-wrap">-->
+<!--                        <div class="deck">-->
+<!--                            <div class="card">-->
+<!--                                <div class="cardHeader">{{request.user.username}}</div>-->
+<!--                                <div class="cardBody">-->
+<!--                                    <p>{{comment.text}}</p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    {%endfor%}-->
+                    <div id="test"></div>
+
+                    {{ article.slug|json_script:'slug' }}
+                    <script>
+                        const articleSlug = JSON.parse(document.getElementById('slug').textContent);
+                        const commentSocket = new WebSocket(
+                            'ws://' +
+                            window.location.host +
+                            '/ws/articles/' +
+                            articleSlug +
+                            '/'
+                        );
+
+                        commentSocket.onmessage = function (e) {
+                            const data = JSON.parse(e.data);
+                            document.querySelector('#test').value += (data.tester + '\n');
+                        };
+
+                    </script>
                 </div>
             </div>
         </div>

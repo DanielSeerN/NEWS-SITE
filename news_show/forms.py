@@ -1,8 +1,10 @@
 from django import forms
 from .models import User
 
+
 class LoginForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].label = 'Логин'
@@ -29,6 +31,7 @@ class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     phone = forms.CharField()
     address = forms.CharField()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].label = 'Логин'
