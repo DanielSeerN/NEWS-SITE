@@ -1,5 +1,5 @@
 from news_show.parsers.cybersports_ru_parser import parse_cybersport_ru_news
-from .models import NewsArticle, SourceCategory, Reader
+from .models import NewsArticle, SourceCategory, Reader, FavouriteArticle
 
 import json
 
@@ -22,6 +22,11 @@ def get_all_news():
 def get_all_categories():
     all_categories = SourceCategory.objects.all()
     return all_categories
+
+
+def get_favorite_articles(reader):
+    favourite_articles = FavouriteArticle.objects.get(reader=reader)
+    return favourite_articles
 
 
 def get_category(kwargs):

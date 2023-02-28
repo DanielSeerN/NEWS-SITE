@@ -1,6 +1,6 @@
-from django.conf.urls import url
+from django.urls import re_path
 from . import consumers
 
 websocket_urlpatterns = [
-    url(r'ws/articles/(?P<slug>\w+)/$', consumers.CommentsConsumer.as_asgi()),
+    re_path(r'ws/articles/(?P<slug>\w+)/$', consumers.CommentsConsumer.as_asgi()),
 ]
