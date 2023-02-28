@@ -136,21 +136,21 @@ class RegistrationView(View):
     Представление для регистрации учётной записи.
     """
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         form = RegistrationForm(request.POST or None)
         context = {
             'form': form
         }
         return render(request, 'news_show/registration.html', context)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         form = RegistrationForm(request.POST or None)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = form.cleaned_data['username']
             user.set_password(form.cleaned_data['password'])
             user.save()
-            reader = Reader.objects.create(user=user, mail_box=user.email)
+            Reader.objects.create(user=user, mail_box=user.email)
             user = authenticate(username=user.username, password=form.cleaned_data['password'])
             login(request, user)
             return redirect('/')

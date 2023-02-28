@@ -17,6 +17,6 @@ urlpatterns = [
 
 ]
 
-# refresh()
+refresh()
 
 
